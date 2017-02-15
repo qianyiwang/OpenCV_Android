@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         setContentView(R.layout.activity_main);
 
         javaCameraView = (JavaCameraView)findViewById(R.id.camera_view);
+        javaCameraView.setCameraIndex(0);//front camera 1 or back camera 0
         javaCameraView.setVisibility(SurfaceView.VISIBLE);
         javaCameraView.setCvCameraViewListener(this);
 
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int width, int height) {
         // initial cameraview variables here
-        newSize = new Size(120, 600);
+        newSize = new Size(120, 60);
 //        mRgba = new Mat(height, width, CvType.CV_8UC4);
         mRgba = new Mat(newSize, CvType.CV_8UC4);
     }
