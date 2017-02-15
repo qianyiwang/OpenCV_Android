@@ -20,6 +20,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     Mat mRgba;
     BaseLoaderCallback baseLoaderCallback;
 
+    static {
+        System.loadLibrary("MyLibs");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 }
             }
         };
+        Log.e(TAG, NativeClass.getMessageFromJNI());
     }
 
     @Override
