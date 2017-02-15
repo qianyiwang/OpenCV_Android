@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public void onCameraViewStarted(int width, int height) {
+        // initial cameraview variables here
         mRgba = new Mat(height, width, CvType.CV_8UC4);
     }
 
