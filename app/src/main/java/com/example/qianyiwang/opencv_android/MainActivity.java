@@ -12,13 +12,16 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
 
     private static final String TAG = "MainActivity";
     JavaCameraView javaCameraView;
-    Mat mRgba;
+    Mat mRgba, resizeMat;
     BaseLoaderCallback baseLoaderCallback;
+    Size newSize;
 
     static {
         System.loadLibrary("MyLibs");
@@ -47,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 }
             }
         };
-        Log.e(TAG, NativeClass.getMessageFromJNI());
     }
 
     @Override
@@ -82,7 +84,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int width, int height) {
         // initial cameraview variables here
-        mRgba = new Mat(height, width, CvType.CV_8UC4);
+        newSize = new Size(120, 600);
+//        mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mRgba = new Mat(newSize, CvType.CV_8UC4);
     }
 
     @Override
@@ -93,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
+        NativeClass.faceDetection(mRgba.getNativeObjAddr());
         return mRgba;
     }
 }

@@ -5,5 +5,6 @@ package com.example.qianyiwang.opencv_android;
  */
 
 public class NativeClass {
-    public native static String getMessageFromJNI();
+    public native static void faceDetection(long addrRgba);
+
 }
