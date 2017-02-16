@@ -13,13 +13,12 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
 
     private static final String TAG = "MainActivity";
     JavaCameraView javaCameraView;
-    Mat mRgba, resizeMat;
+    Mat mRgba;
     BaseLoaderCallback baseLoaderCallback;
     Size newSize;
 

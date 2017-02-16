@@ -4,46 +4,32 @@ JNIEXPORT void JNICALL Java_com_example_qianyiwang_opencv_1android_NativeClass_f
   (JNIEnv *, jclass, jlong addrRgba){
     Mat& frame = *(Mat*)addrRgba;
 
-    detect(frame);
+    imgMatch(frame);
   }
 
-void detect(Mat& frame){
-    String face_cascade_name = "/sdcard/haarcascade_frontalface_default.xml";
-    String eyes_cascade_name = "/sdcard/haarcascade_eye.xml";
-    CascadeClassifier face_cascade;
-    CascadeClassifier eyes_cascade;
-
-    if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading\n"); return; };
-    if( !eyes_cascade.load( eyes_cascade_name ) ){ printf("--(!)Error loading\n"); return; };
-
-    std::vector<Rect> faces;
-    Mat frame_gray;
-
-    cvtColor( frame, frame_gray, CV_BGR2GRAY );
-    equalizeHist( frame_gray, frame_gray );
-    //-- Detect faces
-//    face_cascade.detectMultiScale( frame_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30) );
-    face_cascade.detectMultiScale( frame_gray, faces, 3.5, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30) );
-
-    /** detectAndDisplay */
-    for( size_t i = 0; i < faces.size(); i++ ) {
-        Point center(faces[i].x + faces[i].width * 0.5, faces[i].y + faces[i].height * 0.5);
-        ellipse(frame, center, Size(faces[i].width * 0.5, faces[i].height * 0.5), 0, 0, 360,
-                Scalar(255, 0, 255), 4, 8, 0);
-
-        Mat faceROI = frame_gray(faces[i]);
-        std::vector<Rect> eyes;
-
-        //-- In each face, detect eyes
-//        eyes_cascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30));
-        eyes_cascade.detectMultiScale(faceROI, eyes, 3.5, 2, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30));
-
-        for (size_t j = 0; j < eyes.size(); j++) {
-            Point center(faces[i].x + eyes[j].x + eyes[j].width * 0.5,
-                         faces[i].y + eyes[j].y + eyes[j].height * 0.5);
-            int radius = cvRound((eyes[j].width + eyes[j].height) * 0.25);
-            circle(frame, center, radius, Scalar(255, 0, 0), 4, 8, 0);
-        }
+void imgMatch(Mat& frame){
+    Mat templ, result;
+    int match_method = CV_TM_SQDIFF;
+    templ = imread("/sdcard/templ.JPG", CV_LOAD_IMAGE_COLOR);
+    if(!templ.data){
+        return;
     }
+    cvtColor(templ, templ, CV_8U); // make the templ and input frame the same type
+    int result_cols =  frame.cols - templ.cols + 1;
+    int result_rows = frame.rows - templ.rows + 1;
+    result.create( result_rows, result_cols, CV_32FC1 );
+    matchTemplate( frame, templ, result, match_method );
+    normalize( result, result, 0, 1, NORM_MINMAX, -1, Mat() );
+//     Localizing the best match with minMaxLoc
+    double minVal; double maxVal; Point minLoc; Point maxLoc;
+    Point matchLoc;
+
+    minMaxLoc( result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+    if( match_method  == CV_TM_SQDIFF || match_method == CV_TM_SQDIFF_NORMED )
+    { matchLoc = minLoc; }
+    else
+    { matchLoc = maxLoc; }
+    rectangle( frame, matchLoc, Point( matchLoc.x + templ.cols , matchLoc.y + templ.rows ), Scalar::all(0), 2, 8, 0 );
+
 }
 
